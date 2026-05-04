@@ -1,14 +1,161 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nodd — Verified Young Creators. Fast.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
+  <nav id="navbar">
+    <div class="nav-logo">nodd<span>.</span></div>
+    <ul class="nav-links">
+      <li onclick="smoothTo('#how')">How it works</li>
+      <li onclick="smoothTo('#creators')">Creators</li>
+      <li onclick="smoothTo('#pricing')">Pricing</li>
+      <li onclick="smoothTo('#about')">About</li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-ghost" onclick="openModal('login')">Log in</button>
+      <button class="btn-primary" onclick="openModal('signup')">Get started →</button>
+    </div>
+  </nav>
+
+  <section class="hero" id="home">
+    <div class="hero-badge"><div class="hero-badge-dot"></div>검증된 Gen-Z 크리에이터와 연결되세요</div>
+    <h1 class="hero-headline">AI 콘텐츠,<br><span class="outline">더 빠르게.</span><br><span class="lime">더 트렌디하게.</span></h1>
+    <p class="hero-sub"><strong>고등학생 · 대학생 크리에이터</strong>가 만드는<br>AI 쇼츠 광고 · 앱 콘텐츠 매칭 플랫폼.<br>진짜 Z세대만이 알고 있는 트렌드로.</p>
+    <div class="hero-actions">
+      <button class="btn-lg btn-lg-dark" onclick="openModal('signup')">지금 시작하기</button>
+      <button class="btn-lg btn-lg-outline" onclick="openModal('creator')">크리에이터로 활동하기 →</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">2,400<em>+</em></div><div class="stat-lbl">검증된 크리에이터</div></div>
+      <div><div class="stat-num">48<em>h</em></div><div class="stat-lbl">평균 납품 시간</div></div>
+      <div><div class="stat-num">98<em>%</em></div><div class="stat-lbl">브랜드 재구매율</div></div>
+      <div><div class="stat-num">₩0</div><div class="stat-lbl">브랜드 가입비</div></div>
+    </div>
+    <div class="hero-card">
+      <div class="hc-header"><div class="hc-avatar">J</div><div><div class="hc-name">지수 @ji.creates</div><span class="hc-tag">✓ 검증 크리에이터</span></div></div>
+      <div class="hc-thumb"><span>AI 뷰티 쇼츠 · 15sec</span></div>
+      <div class="hc-badge">⚡ AI-Enhanced Edit</div>
+      <div class="hc-foot"><div><div class="hc-price">₩120,000 <span>/ 쇼츠 1편</span></div><div class="hc-dl">⏱ 48시간 내 납품</div></div><button class="btn-primary" style="font-size:13px;padding:8px 16px" onclick="openModal('signup')">의뢰하기</button></div>
+    </div>
+  </section>
+
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="m-item"><span class="m-dot"></span>AI 쇼츠 광고</span><span class="m-item"><span class="m-dot"></span>앱 프로모션</span><span class="m-item"><span class="m-dot"></span>SNS 콘텐츠</span><span class="m-item"><span class="m-dot"></span>TikTok · Reels</span><span class="m-item"><span class="m-dot"></span>Gen-Z 타깃팅</span><span class="m-item"><span class="m-dot"></span>48h 납품</span><span class="m-item"><span class="m-dot"></span>검증된 크리에이터</span><span class="m-item"><span class="m-dot"></span>AI Enhanced</span>
+      <span class="m-item"><span class="m-dot"></span>AI 쇼츠 광고</span><span class="m-item"><span class="m-dot"></span>앱 프로모션</span><span class="m-item"><span class="m-dot"></span>SNS 콘텐츠</span><span class="m-item"><span class="m-dot"></span>TikTok · Reels</span><span class="m-item"><span class="m-dot"></span>Gen-Z 타깃팅</span><span class="m-item"><span class="m-dot"></span>48h 납품</span><span class="m-item"><span class="m-dot"></span>검증된 크리에이터</span><span class="m-item"><span class="m-dot"></span>AI Enhanced</span>
+    </div>
+  </div>
+
+  <section class="how-sec reveal" id="how">
+    <div class="inner">
+      <div class="sec-label">How it works</div>
+      <h2 class="sec-title">3단계로<br>완성되는 콘텐츠</h2>
+      <div class="steps-grid">
+        <div class="step-card"><div class="step-num">01</div><div class="step-icon">🎯</div><div class="step-title">브리프 작성</div><div class="step-desc">원하는 콘텐츠 유형, 톤앤매너, 타깃 플랫폼을 입력하세요. AI가 최적의 크리에이터를 매칭합니다.</div></div>
+        <div class="step-card"><div class="step-num">02</div><div class="step-icon">✨</div><div class="step-title">크리에이터 선택</div><div class="step-desc">포트폴리오와 리뷰를 보고 원하는 크리에이터를 선택하세요. 모든 크리에이터는 nodd가 직접 검증합니다.</div></div>
+        <div class="step-card"><div class="step-num">03</div><div class="step-icon">🚀</div><div class="step-title">48시간 내 수령</div><div class="step-desc">평균 48시간, 최대 72시간 이내에 완성된 콘텐츠를 받아보세요. 마음에 안 들면 무료 재작업.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-sec reveal" id="about">
+    <div class="inner">
+      <div class="sec-label">Why nodd</div>
+      <h2 class="sec-title">nodd가<br>다른 이유</h2>
+      <div class="why-grid">
+        <div class="why-card wide"><div><div class="why-icon">⚡</div><div class="why-title">진짜 Z세대 크리에이터</div><div class="why-desc">nodd의 크리에이터는 전원 고등학생 · 대학생으로 제한됩니다. 지금 이 순간의 트렌드를 가장 잘 아는 사람들이 만들기 때문에 콘텐츠가 다릅니다. 진짜 Z세대가 Z세대를 겨냥한 광고를 만들 때 결과물이 달라집니다.</div></div><div class="why-visual">🎬</div></div>
+        <div class="why-card"><div class="why-icon">🤖</div><div class="why-title">AI-Enhanced 워크플로우</div><div class="why-desc">단순 제작이 아닙니다. nodd 크리에이터들은 AI 편집 툴, 음악 생성, 자막 자동화까지 활용해 퀄리티와 속도를 동시에 잡습니다.</div></div>
+        <div class="why-card"><div class="why-icon">🛡</div><div class="why-title">nodd 검증 보증</div><div class="why-desc">포트폴리오 심사 → 샘플 제출 → 인터뷰까지. 3단계 검증을 통과한 크리에이터만 활동 가능합니다. 브랜드가 안심하고 맡길 수 있습니다.</div></div>
+        <div class="why-card"><div class="why-icon">⚖️</div><div class="why-title">공정한 수익 구조</div><div class="why-desc">크리에이터는 수익의 80%를 직접 수령. nodd는 20% 플랫폼 수수료만 받습니다. 크리에이터가 행복해야 좋은 콘텐츠가 나옵니다.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="creators-sec reveal" id="creators">
+    <div class="inner">
+      <div class="creators-head">
+        <div><div class="sec-label">Featured Creators</div><h2 class="sec-title">지금 핫한<br>크리에이터들</h2></div>
+        <button class="btn-lg btn-lg-outline" style="font-size:14px;padding:14px 28px" onclick="openModal('signup')">전체 보기 →</button>
+      </div>
+      <div class="creators-grid">
+        <div class="creator-card"><div class="cc-thumb cc-t1"><span style="font-size:52px">🎮</span><div class="cc-badge">TOP</div></div><div class="cc-info"><div class="cc-name">민준 @jun.ai</div><div class="cc-type">대학교 2학년 · 영상편집 전공</div><div class="cc-tags"><span class="tag">게임</span><span class="tag">테크</span><span class="tag">AI</span></div></div><div class="cc-foot"><div class="cc-price">₩150,000~</div><div class="cc-rating"><em>★</em> 4.9 (83)</div></div></div>
+        <div class="creator-card"><div class="cc-thumb cc-t2"><span style="font-size:52px">💄</span><div class="cc-badge">HOT</div></div><div class="cc-info"><div class="cc-name">소연 @soyeon.v</div><div class="cc-type">고등학교 3학년 · 뷰티 크리에이터</div><div class="cc-tags"><span class="tag">뷰티</span><span class="tag">라이프</span><span class="tag">Reels</span></div></div><div class="cc-foot"><div class="cc-price">₩90,000~</div><div class="cc-rating"><em>★</em> 5.0 (47)</div></div></div>
+        <div class="creator-card"><div class="cc-thumb cc-t3"><span style="font-size:52px">🍕</span><div class="cc-badge">NEW</div></div><div class="cc-info"><div class="cc-name">태양 @taeyang.eats</div><div class="cc-type">대학교 1학년 · 영상 콘텐츠</div><div class="cc-tags"><span class="tag">푸드</span><span class="tag">TikTok</span><span class="tag">리뷰</span></div></div><div class="cc-foot"><div class="cc-price">₩80,000~</div><div class="cc-rating"><em>★</em> 4.8 (21)</div></div></div>
+        <div class="creator-card"><div class="cc-thumb cc-t4"><span style="font-size:52px">📱</span><div class="cc-badge">TOP</div></div><div class="cc-info"><div class="cc-name">하은 @haeun.app</div><div class="cc-type">대학교 3학년 · 앱 마케팅 특화</div><div class="cc-tags"><span class="tag">앱광고</span><span class="tag">UX</span><span class="tag">B2B</span></div></div><div class="cc-foot"><div class="cc-price">₩200,000~</div><div class="cc-rating"><em>★</em> 4.9 (112)</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-sec reveal" id="pricing">
+    <div class="inner">
+      <div class="sec-label" style="text-align:center">Pricing</div>
+      <h2 class="sec-title" style="text-align:center">투명한<br>가격 구조</h2>
+      <p class="sec-sub" style="margin:0 auto;text-align:center">숨겨진 비용 없이. 브랜드 가입은 무료, 성공 시에만 수수료.</p>
+      <div class="pricing-grid">
+        <div class="p-card"><div class="p-plan">Starter</div><div class="p-price">₩0</div><div class="p-period">가입비 없음</div><div class="p-desc">처음 시작하는 브랜드를 위한 플랜. 소규모 테스트에 최적.</div><ul class="p-list"><li class="p-feat"><span class="p-check">✓</span>월 3회 콘텐츠 의뢰</li><li class="p-feat"><span class="p-check">✓</span>크리에이터 매칭 AI</li><li class="p-feat"><span class="p-check">✓</span>72시간 납품</li><li class="p-feat"><span class="p-check">✓</span>1회 무료 수정</li></ul><button class="btn-p btn-p-ghost" onclick="openModal('signup')">무료로 시작</button></div>
+        <div class="p-card featured"><div class="p-badge">🔥 MOST POPULAR</div><div class="p-plan">Growth</div><div class="p-price">₩99,000</div><div class="p-period">/ 월 구독</div><div class="p-desc">성장하는 브랜드의 선택. 더 빠르게, 더 많이.</div><ul class="p-list"><li class="p-feat"><span class="p-check">✓</span>월 15회 콘텐츠 의뢰</li><li class="p-feat"><span class="p-check">✓</span>우선 매칭 & 전담 매니저</li><li class="p-feat"><span class="p-check">✓</span>48시간 납품 보장</li><li class="p-feat"><span class="p-check">✓</span>무제한 수정</li><li class="p-feat"><span class="p-check">✓</span>성과 분석 대시보드</li></ul><button class="btn-p btn-p-lime" onclick="openModal('signup')">지금 구독하기</button></div>
+        <div class="p-card"><div class="p-plan">Enterprise</div><div class="p-price">맞춤</div><div class="p-period">견적 상담</div><div class="p-desc">대형 브랜드 · 에이전시를 위한 맞춤형 솔루션.</div><ul class="p-list"><li class="p-feat"><span class="p-check">✓</span>무제한 콘텐츠 의뢰</li><li class="p-feat"><span class="p-check">✓</span>전담 크리에이터 팀 구성</li><li class="p-feat"><span class="p-check">✓</span>24시간 납품 옵션</li><li class="p-feat"><span class="p-check">✓</span>화이트라벨 & API 연동</li><li class="p-feat"><span class="p-check">✓</span>글로벌 (KR + US) 크리에이터</li></ul><button class="btn-p btn-p-ghost" onclick="window.location.href='mailto:hello@nodd.io'">문의하기 →</button></div>
+      </div>
+      <div class="pricing-note"><strong>크리에이터 가입은 항상 무료</strong><span> — 수익의 80%를 가져가세요. 수수료는 20%만.</span></div>
+    </div>
+  </section>
+
+  <section class="testi-sec reveal">
+    <div class="inner">
+      <div class="sec-label">Reviews</div>
+      <h2 class="sec-title">브랜드와<br>크리에이터의 반응</h2>
+      <div class="testi-grid">
+        <div class="t-card"><div class="t-stars">★★★★★</div><div class="t-text">"에이전시에 맡기면 2주 걸리던 쇼츠 광고를 48시간 만에 받았어요. 퀄리티도 솔직히 더 나았습니다."</div><div class="t-author"><div class="t-avatar av1">김</div><div><div class="t-name">김도현</div><div class="t-role">스타트업 마케터 · 앱 서비스</div></div></div></div>
+        <div class="t-card"><div class="t-stars">★★★★★</div><div class="t-text">"대학교 다니면서 월 200만원 버는 게 진짜라고요? nodd 덕분에 포트폴리오도 쌓이고 수익도 생겼어요."</div><div class="t-author"><div class="t-avatar av2">이</div><div><div class="t-name">이지은</div><div class="t-role">nodd 크리에이터 · 대학교 2학년</div></div></div></div>
+        <div class="t-card"><div class="t-stars">★★★★★</div><div class="t-text">"타겟이 Z세대인데 Z세대가 직접 만든 광고라니. CTR이 기존 광고 대비 3배 올랐습니다. 계속 쓸 거예요."</div><div class="t-author"><div class="t-avatar av3">박</div><div><div class="t-name">박서연</div><div class="t-role">패션 브랜드 CMO</div></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-sec reveal">
+    <div class="inner">
+      <div class="cta-box">
+        <div class="cta-title">지금 바로<br><span class="lime">nodd</span>를 시작하세요</div>
+        <p class="cta-sub">브랜드는 무료로 가입. 크리에이터는 바로 수익 창출.</p>
+        <div class="cta-form"><input type="email" class="cta-input" placeholder="이메일 주소를 입력하세요" id="ctaEmail"><button class="btn-cta" onclick="handleCTA()">시작하기 →</button></div>
+        <div class="cta-note">신용카드 불필요 · 가입비 없음 · 언제든 취소 가능</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="inner">
+      <div class="footer-top">
+        <div>
+          <div class="nav-logo">nodd<span>.</span></div>
+          <p class="footer-desc">검증된 Z세대 크리에이터와 브랜드를 연결하는 AI 콘텐츠 매칭 플랫폼. 한국에서 시작해 전 세계로.</p>
+          <div class="footer-socials"><div class="social-btn">𝕏</div><div class="social-btn">📸</div><div class="social-btn">🎵</div><div class="social-btn">in</div></div>
+        </div>
+        <div><div class="footer-col-title">Product</div><ul class="footer-links"><li>서비스 소개</li><li>크리에이터 지원</li><li>가격 안내</li><li>포트폴리오</li><li>API 연동</li></ul></div>
+        <div><div class="footer-col-title">Company</div><ul class="footer-links"><li>회사 소개</li><li>블로그</li><li>채용</li><li>파트너십</li><li>문의하기</li></ul></div>
+        <div><div class="footer-col-title">Legal</div><ul class="footer-links"><li>이용약관</li><li>개인정보처리방침</li><li>크리에이터 정책</li><li>저작권 정책</li></ul></div>
+      </div>
+      <div class="footer-bottom"><div>© 2025 nodd Inc. All rights reserved.</div><div class="footer-langs"><span class="lang-btn active">한국어</span><span class="lang-btn">English</span></div></div>
+    </div>
+  </footer>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="bgClose(event)">
+    <div class="modal"><button class="modal-close" onclick="closeModal()">✕</button><div id="modalContent"></div></div>
+  </div>
+
+  <script src="main.js"></script>
 </body>
 </html>
