@@ -38,6 +38,9 @@ class NoddHero extends HTMLElement {
           justify-content: center;
           padding: 140px 48px 80px;
           min-height: 100vh;
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
         }
 
         .badge {
@@ -214,9 +217,12 @@ class NoddHero extends HTMLElement {
           .card { display: none; }
         }
         @media (max-width: 768px) {
-          .hero { padding: 120px 24px 60px; }
+          .hero { padding: 120px 24px 60px; align-items: center; text-align: center; }
+          .badge { margin-left: auto; margin-right: auto; }
           .headline { letter-spacing: -2px; }
-          .stats { flex-wrap: wrap; gap: 28px; }
+          .sub { margin-left: auto; margin-right: auto; }
+          .actions { justify-content: center; }
+          .stats { flex-wrap: wrap; gap: 28px; justify-content: center; }
         }
 
         /* Delays */
