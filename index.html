@@ -907,8 +907,9 @@ function submitLogin(btn){
   if(!isValidEmail(email)){showFieldError('email','올바른 이메일을 입력해주세요.');return;}
   if(pw.length<8){showFieldError('password','비밀번호는 8자 이상이어야 합니다.');return;}
   if(!rateLimitCheck('login',5,300000)){showToast('로그인 시도가 너무 많습니다. 5분 후 재시도해주세요.','error');return;}
-  setLoading(btn,true);
-  setTimeout(()=>{setLoading(btn,false);showToast('Firebase 연동 후 이용 가능합니다.');},1000);
+  const email=sanitizeInput(document.getElementById('email')?.value||'');
+  const pw=document.getElementById('password')?.value||'';
+  window.firebaseLogin(email, pw, btn);
 }
 
 function submitCreator(btn){
@@ -930,8 +931,8 @@ function submitCreator(btn){
   if(!liabAgreed){showToast('법적 책임 고지 사항에 동의해주세요.','error');ok=false;}
   if(!ok)return;
   if(!rateLimitCheck('apply',3,3600000)){showToast('지원은 1시간에 3회까지 가능합니다.','error');return;}
-  setLoading(btn,true);
-  setTimeout(()=>{setLoading(btn,false);closeModal();showToast('지원이 완료되었습니다! 3영업일 내 연락드립니다.','success');},1200);
+  const data={name,email,school,specialty:sanitizeInput(document.getElementById('creator-specialty')?.value||''),ageVerified:true};
+  window.firebaseApply(data, btn);
 }
 
 function submitBrand(btn){
@@ -943,7 +944,7 @@ function submitBrand(btn){
   if(!agreed){showToast('이용약관 및 개인정보처리방침에 동의해주세요.','error');return;}
   if(!rateLimitCheck('signup',5,3600000)){showToast('잠시 후 다시 시도해주세요.','error');return;}
   setLoading(btn,true);
-  setTimeout(()=>{setLoading(btn,false);closeModal();showToast('가입 완료! Firebase 연동 후 정식 서비스됩니다.','success');},1200);
+  window.firebaseSignup(email, '123456', 'brand', company, btn);
 }
 
 function showFieldError(id, msg){
@@ -985,6 +986,120 @@ function switchType(t){
     ?'브랜드가 촬영본·사진·제품 소스를 제공하면 크리에이터가 AI 편집으로 완성합니다.'
     :'기획부터 촬영·편집까지 크리에이터가 전담합니다. 브랜드는 브리프만 주시면 됩니다.';
 }
+
+/* ══════════════════════════════════════
+   🔥 FIREBASE 설정
+══════════════════════════════════════ */
+</script>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCRaRnBaIxl3nLQXS88ThOfEGIfXeiVIp0",
+  authDomain: "nodd-app-1e438.firebaseapp.com",
+  projectId: "nodd-app-1e438",
+  storageBucket: "nodd-app-1e438.firebasestorage.app",
+  messagingSenderId: "262141335590",
+  appId: "1:262141335590:web:0bea68de1c65d85b026ee7",
+  measurementId: "G-5WKZL6D9M1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── 로그인 상태 감지 ──
+onAuthStateChanged(auth, (user) => {
+  const navCta = document.querySelector('.nav-cta');
+  if(user){
+    // 로그인 상태 — 버튼 변경
+    navCta.innerHTML = `
+      <span style="font-size:14px;color:rgba(0,0,0,0.5);font-family:var(--font-b)">${user.email}</span>
+      <button class="btn-primary" onclick="window.firebaseLogout()">로그아웃</button>
+    `;
+  } else {
+    // 비로그인 상태 — 원래 버튼
+    navCta.innerHTML = `
+      <button class="btn-ghost" onclick="openModal('login')">Log in</button>
+      <button class="btn-primary" onclick="openModal('signup')">Get started →</button>
+    `;
+  }
+});
+
+// ── 이메일 로그인 ──
+window.firebaseLogin = async (email, password, btn) => {
+  try {
+    setLoading(btn, true);
+    await signInWithEmailAndPassword(auth, email, password);
+    closeModal();
+    showToast('로그인되었습니다!', 'success');
+  } catch(e) {
+    setLoading(btn, false);
+    const msg = e.code === 'auth/invalid-credential' ? '이메일 또는 비밀번호가 틀렸습니다.' :
+                e.code === 'auth/too-many-requests' ? '잠시 후 다시 시도해주세요.' : '로그인 실패. 다시 시도해주세요.';
+    showToast(msg, 'error');
+  }
+};
+
+// ── 이메일 회원가입 ──
+window.firebaseSignup = async (email, password, role, company, btn) => {
+  try {
+    setLoading(btn, true);
+    const { user } = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, 'users', user.uid), {
+      email, role, company: company || '',
+      createdAt: serverTimestamp()
+    });
+    closeModal();
+    showToast('가입이 완료되었습니다!', 'success');
+  } catch(e) {
+    setLoading(btn, false);
+    const msg = e.code === 'auth/email-already-in-use' ? '이미 사용 중인 이메일입니다.' :
+                e.code === 'auth/weak-password' ? '비밀번호는 6자 이상이어야 합니다.' : '가입 실패. 다시 시도해주세요.';
+    showToast(msg, 'error');
+  }
+};
+
+// ── 로그아웃 ──
+window.firebaseLogout = async () => {
+  await signOut(auth);
+  showToast('로그아웃되었습니다.', 'success');
+};
+
+// ── 크리에이터 지원서 저장 ──
+window.firebaseApply = async (data, btn) => {
+  try {
+    setLoading(btn, true);
+    await setDoc(doc(db, 'applications', `${Date.now()}_${data.email}`), {
+      ...data,
+      createdAt: serverTimestamp(),
+      status: 'pending'
+    });
+    closeModal();
+    showToast('지원이 완료되었습니다! 3영업일 내 연락드립니다.', 'success');
+  } catch(e) {
+    setLoading(btn, false);
+    showToast('지원 실패. 다시 시도해주세요.', 'error');
+  }
+};
+
+// ── 웨이트리스트 이메일 저장 ──
+window.firebaseWaitlist = async (email) => {
+  try {
+    await setDoc(doc(db, 'waitlist', email), {
+      email, createdAt: serverTimestamp()
+    });
+    showToast('등록되었습니다! 런칭 시 알려드릴게요.', 'success');
+  } catch(e) {
+    showToast('등록 실패. 다시 시도해주세요.', 'error');
+  }
+};
+</script>
+<script>
 </script>
 </body>
 </html>
