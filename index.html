@@ -849,6 +849,7 @@ function buildSignupForm(){
   const sub=document.createElement('div');sub.className='modal-sub';sub.textContent='이메일로 간편하게 가입하세요';frag.appendChild(sub);
   frag.appendChild(buildField('brand-email','이메일','email','hello@example.com'));
   frag.appendChild(buildField('brand-pw','비밀번호','password','8자 이상'));
+  frag.appendChild(buildField('brand-pw2','비밀번호 확인','password','비밀번호를 다시 입력하세요'));
   // 동의
   const agreeDiv=document.createElement('div');agreeDiv.className='form-group';agreeDiv.style.cssText='display:flex;align-items:flex-start;gap:10px;margin-top:4px;';
   const chk=document.createElement('input');chk.type='checkbox';chk.id='brand-agree';chk.style.cssText='margin-top:3px;flex-shrink:0;width:16px;height:16px;cursor:pointer;';
@@ -914,6 +915,8 @@ function submitBrand(btn){
   const agreed=document.getElementById('brand-agree')?.checked;
   if(!isValidEmail(email)){showFieldError('brand-email','올바른 이메일을 입력해주세요.');return;}
   if(pw.length<8){showFieldError('brand-pw','비밀번호는 8자 이상이어야 합니다.');return;}
+  const pw2=document.getElementById('brand-pw2')?.value||'';
+  if(pw!==pw2){showFieldError('brand-pw2','비밀번호가 일치하지 않습니다.');return;}
   if(!agreed){showToast('이용약관 및 개인정보처리방침에 동의해주세요.','error');return;}
   if(!rateLimitCheck('signup',5,3600000)){showToast('잠시 후 다시 시도해주세요.','error');return;}
   setLoading(btn,true);
