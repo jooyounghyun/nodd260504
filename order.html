@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>콘텐츠 의뢰하기 — nodd</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f5f0;--bg2:#eeeae2;--blk:#0f0f0f;--wht:#fff;--lime:#b8e000;--limed:#7aaa00;--border:rgba(0,0,0,0.08);--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;--ease:cubic-bezier(0.16,1,0.3,1);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:var(--font-b);font-size:15px;color:var(--blk);min-height:100vh;}
+
+/* NAV */
+nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padding:16px 48px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);}
+.nav-logo{font-family:var(--font-d);font-size:22px;font-weight:800;letter-spacing:-0.5px;text-decoration:none;color:var(--blk);}
+.nav-logo span{color:var(--limed);}
+.nav-back{font-size:13px;color:rgba(0,0,0,0.45);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color 0.2s;}
+.nav-back:hover{color:var(--blk);}
+
+/* LAYOUT */
+.container{max-width:720px;margin:0 auto;padding:60px 24px 100px;}
+
+/* PROGRESS */
+.progress-wrap{margin-bottom:48px;}
+.progress-steps{display:flex;align-items:center;gap:0;margin-bottom:12px;}
+.p-step{display:flex;align-items:center;gap:8px;flex:1;}
+.p-step:last-child{flex:0;}
+.p-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:13px;font-weight:700;border:2px solid var(--border);background:var(--wht);color:rgba(0,0,0,0.3);transition:all 0.3s;flex-shrink:0;}
+.p-circle.active{background:var(--blk);border-color:var(--blk);color:#fff;}
+.p-circle.done{background:var(--limed);border-color:var(--limed);color:var(--blk);}
+.p-line{flex:1;height:2px;background:var(--border);margin:0 8px;transition:background 0.3s;}
+.p-line.done{background:var(--limed);}
+.p-labels{display:flex;justify-content:space-between;}
+.p-label{font-size:11px;font-weight:600;color:rgba(0,0,0,0.35);text-align:center;flex:1;}
+.p-label:last-child{flex:0;min-width:60px;text-align:right;}
+.p-label.active{color:var(--blk);}
+
+/* STEP CARDS */
+.step-section{display:none;}
+.step-section.on{display:block;}
+.step-title{font-family:var(--font-d);font-size:32px;font-weight:800;letter-spacing:-1.5px;margin-bottom:8px;}
+.step-sub{font-size:15px;color:rgba(0,0,0,0.45);margin-bottom:36px;line-height:1.6;}
+
+/* 서비스 선택 카드 */
+.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;}
+.service-card{background:var(--wht);border:2px solid var(--border);border-radius:20px;padding:28px;cursor:pointer;transition:all 0.25s var(--ease);position:relative;}
+.service-card:hover{border-color:rgba(0,0,0,0.2);transform:translateY(-2px);}
+.service-card.selected{border-color:var(--blk);background:#fff;}
+.service-card.selected::after{content:'✓';position:absolute;top:16px;right:16px;width:24px;height:24px;background:var(--blk);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.service-icon{font-size:36px;margin-bottom:16px;}
+.service-name{font-family:var(--font-d);font-size:18px;font-weight:700;margin-bottom:6px;}
+.service-price{font-family:var(--font-d);font-size:22px;font-weight:800;color:var(--blk);margin-bottom:4px;}
+.service-period{font-size:11px;color:rgba(0,0,0,0.38);margin-bottom:14px;}
+.service-feats{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.service-feat{font-size:12px;color:rgba(0,0,0,0.55);display:flex;align-items:center;gap:6px;}
+.feat-check{color:var(--limed);font-size:13px;font-weight:700;}
+
+/* 폼 */
+.form-section{background:var(--wht);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:24px;}
+.form-section-title{font-family:var(--font-d);font-size:16px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.form-group{margin-bottom:20px;}
+.form-group:last-child{margin-bottom:0;}
+.form-label{font-size:13px;font-weight:600;color:rgba(0,0,0,0.5);margin-bottom:8px;display:block;}
+.form-label span{color:var(--limed);margin-left:2px;}
+.form-input,.form-textarea,.form-select{width:100%;background:rgba(0,0,0,0.03);border:1.5px solid rgba(0,0,0,0.08);border-radius:12px;padding:13px 16px;font-family:var(--font-b);font-size:14px;color:var(--blk);outline:none;transition:border-color 0.2s;}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:rgba(122,170,0,0.6);background:#fff;}
+.form-textarea{resize:vertical;min-height:120px;line-height:1.65;}
+.form-select option{background:#fff;}
+.form-hint{font-size:11px;color:rgba(0,0,0,0.35);margin-top:6px;}
+
+/* 카테고리 선택 */
+.cat-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.cat-btn{padding:8px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--wht);font-family:var(--font-b);font-size:13px;font-weight:500;cursor:pointer;color:rgba(0,0,0,0.5);transition:all 0.2s;}
+.cat-btn:hover{border-color:rgba(0,0,0,0.2);}
+.cat-btn.on{border-color:var(--blk);background:var(--blk);color:#fff;}
+
+/* 플랫폼 선택 */
+.platform-grid{display:flex;gap:10px;}
+.platform-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:var(--wht);font-family:var(--font-b);font-size:12px;font-weight:600;cursor:pointer;color:rgba(0,0,0,0.45);text-align:center;transition:all 0.2s;}
+.platform-btn:hover{border-color:rgba(0,0,0,0.2);}
+.platform-btn.on{border-color:var(--blk);background:var(--blk);color:#fff;}
+.platform-icon{font-size:20px;display:block;margin-bottom:4px;}
+
+/* 완료 화면 */
+.done-wrap{text-align:center;padding:60px 0;}
+.done-icon{font-size:64px;margin-bottom:24px;}
+.done-title{font-family:var(--font-d);font-size:32px;font-weight:800;letter-spacing:-1.5px;margin-bottom:12px;}
+.done-sub{font-size:15px;color:rgba(0,0,0,0.45);line-height:1.75;margin-bottom:40px;}
+.done-box{background:var(--wht);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:32px;text-align:left;}
+.done-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:14px;}
+.done-row:last-child{border-bottom:none;}
+.done-row-label{color:rgba(0,0,0,0.4);}
+.done-row-value{font-weight:600;}
+
+/* 버튼 */
+.btn-next{width:100%;background:var(--blk);color:#fff;border:none;border-radius:14px;padding:18px;font-family:var(--font-d);font-size:16px;font-weight:700;cursor:pointer;transition:opacity 0.2s,transform 0.2s;margin-top:8px;}
+.btn-next:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-next:disabled{opacity:0.3;cursor:not-allowed;transform:none;}
+.btn-prev{width:100%;background:transparent;color:rgba(0,0,0,0.4);border:1.5px solid var(--border);border-radius:14px;padding:16px;font-family:var(--font-d);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+.btn-prev:hover{border-color:rgba(0,0,0,0.25);color:var(--blk);}
+.btn-home{display:inline-block;background:var(--blk);color:#fff;border:none;border-radius:14px;padding:16px 40px;font-family:var(--font-d);font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity 0.2s;}
+.btn-home:hover{opacity:0.85;}
+
+/* 로그인 필요 */
+.login-required{text-align:center;padding:80px 24px;}
+.login-required-title{font-family:var(--font-d);font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:12px;}
+.login-required-sub{font-size:15px;color:rgba(0,0,0,0.45);margin-bottom:32px;}
+.btn-go-login{display:inline-block;background:var(--blk);color:#fff;border-radius:100px;padding:14px 36px;font-family:var(--font-d);font-size:15px;font-weight:700;text-decoration:none;cursor:pointer;}
+
+/* 토스트 */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--blk);color:#fff;border-radius:100px;padding:12px 24px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:all 0.3s var(--ease);pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:#c0392b;}
+
+@media(max-width:768px){
+  nav{padding:14px 20px;}
+  .container{padding:40px 16px 80px;}
+  .service-grid{grid-template-columns:1fr;}
+  .platform-grid{flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">nodd<span>.</span></a>
+  <a href="index.html" class="nav-back">← 홈으로</a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- 로그인 필요 화면 -->
+<div class="login-required" id="loginRequired" style="display:none">
+  <div style="font-size:48px;margin-bottom:20px">🔒</div>
+  <div class="login-required-title">로그인이 필요해요</div>
+  <div class="login-required-sub">의뢰하려면 먼저 로그인해주세요.</div>
+  <a href="index.html" class="btn-go-login">로그인하러 가기</a>
+</div>
+
+<!-- 의뢰 화면 -->
+<div class="container" id="orderWrap" style="display:none">
+
+  <!-- 진행 상태 -->
+  <div class="progress-wrap">
+    <div class="progress-steps">
+      <div class="p-step">
+        <div class="p-circle active" id="pc1">1</div>
+        <div class="p-line" id="pl1"></div>
+      </div>
+      <div class="p-step">
+        <div class="p-circle" id="pc2">2</div>
+        <div class="p-line" id="pl2"></div>
+      </div>
+      <div class="p-circle" id="pc3">3</div>
+    </div>
+    <div class="p-labels">
+      <span class="p-label active" id="pl-1">서비스 선택</span>
+      <span class="p-label" id="pl-2">브리프 작성</span>
+      <span class="p-label" id="pl-3">완료</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: 서비스 선택 -->
+  <div class="step-section on" id="step1">
+    <div class="step-title">어떤 서비스가<br>필요하세요?</div>
+    <div class="step-sub">제작 방식을 선택해주세요. 언제든 변경 가능합니다.</div>
+    <div class="service-grid">
+      <div class="service-card" id="svc-a" onclick="selectService('A')">
+        <div class="service-icon">✂️</div>
+        <div class="service-name">편집만</div>
+        <div class="service-price">₩70,000</div>
+        <div class="service-period">/ 15초 쇼츠 1편</div>
+        <ul class="service-feats">
+          <li class="service-feat"><span class="feat-check">✓</span>소스 자료 직접 제공</li>
+          <li class="service-feat"><span class="feat-check">✓</span>AI 편집·자막·효과음</li>
+          <li class="service-feat"><span class="feat-check">✓</span>48시간 납품</li>
+          <li class="service-feat"><span class="feat-check">✓</span>1회 수정 포함</li>
+        </ul>
+      </div>
+      <div class="service-card" id="svc-b" onclick="selectService('B')">
+        <div class="service-icon">🎬</div>
+        <div class="service-name">촬영 + 편집</div>
+        <div class="service-price">₩150,000</div>
+        <div class="service-period">/ 15초 쇼츠 1편</div>
+        <ul class="service-feats">
+          <li class="service-feat"><span class="feat-check">✓</span>기획·촬영·편집 전부</li>
+          <li class="service-feat"><span class="feat-check">✓</span>AI 음악·자막 자동화</li>
+          <li class="service-feat"><span class="feat-check">✓</span>48시간 납품</li>
+          <li class="service-feat"><span class="feat-check">✓</span>1회 수정 포함</li>
+        </ul>
+      </div>
+    </div>
+    <button class="btn-next" id="btn1" onclick="goStep(2)" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- STEP 2: 브리프 작성 -->
+  <div class="step-section" id="step2">
+    <div class="step-title">어떤 콘텐츠를<br>원하시나요?</div>
+    <div class="step-sub">자세히 적을수록 더 좋은 결과물이 나와요.</div>
+
+    <!-- 카테고리 -->
+    <div class="form-section">
+      <div class="form-section-title">📂 콘텐츠 카테고리</div>
+      <div class="form-group">
+        <div class="cat-grid" id="catGrid">
+          <button class="cat-btn" onclick="selectCat(this)">뷰티·스킨케어</button>
+          <button class="cat-btn" onclick="selectCat(this)">푸드·음식</button>
+          <button class="cat-btn" onclick="selectCat(this)">앱·서비스 광고</button>
+          <button class="cat-btn" onclick="selectCat(this)">게임·테크</button>
+          <button class="cat-btn" onclick="selectCat(this)">패션·라이프</button>
+          <button class="cat-btn" onclick="selectCat(this)">여행·브이로그</button>
+          <button class="cat-btn" onclick="selectCat(this)">교육·정보</button>
+          <button class="cat-btn" onclick="selectCat(this)">기타</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 플랫폼 -->
+    <div class="form-section">
+      <div class="form-section-title">📱 타깃 플랫폼</div>
+      <div class="form-group">
+        <div class="platform-grid">
+          <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">🎵</span>TikTok</button>
+          <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">📸</span>Instagram Reels</button>
+          <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">▶️</span>YouTube Shorts</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 요청사항 -->
+    <div class="form-section">
+      <div class="form-section-title">📝 요청사항</div>
+      <div class="form-group">
+        <label class="form-label">브랜드/제품명 <span>*</span></label>
+        <input type="text" class="form-input" id="brandName" placeholder="ex) 노드 스킨케어 세럼">
+      </div>
+      <div class="form-group">
+        <label class="form-label">참고 영상 URL <span style="color:rgba(0,0,0,0.3);font-weight:400">(선택)</span></label>
+        <input type="url" class="form-input" id="refUrl" placeholder="https://www.tiktok.com/@...">
+        <div class="form-hint">비슷하게 만들고 싶은 영상 링크를 넣어주세요.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">요청사항 <span>*</span></label>
+        <textarea class="form-textarea" id="requestText" placeholder="원하는 분위기, 꼭 넣어야 할 내용, 피해야 할 것 등 자유롭게 적어주세요."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">연락처 이메일 <span>*</span></label>
+        <input type="email" class="form-input" id="contactEmail" placeholder="답변 받을 이메일 주소">
+      </div>
+    </div>
+
+    <button class="btn-next" onclick="submitOrder()">의뢰 접수하기 →</button>
+    <button class="btn-prev" onclick="goStep(1)">← 이전으로</button>
+  </div>
+
+  <!-- STEP 3: 완료 -->
+  <div class="step-section" id="step3">
+    <div class="done-wrap">
+      <div class="done-icon">🎉</div>
+      <div class="done-title">의뢰가 접수되었어요!</div>
+      <div class="done-sub">담당 크리에이터를 매칭 중입니다.<br>빠르면 당일, 늦어도 24시간 내에 연락드릴게요.</div>
+      <div class="done-box" id="doneSummary"></div>
+      <a href="index.html" class="btn-home">홈으로 돌아가기</a>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCRaRnBaIxl3nLQXS88ThOfEGIfXeiVIp0",
+  authDomain: "nodd-app-1e438.firebaseapp.com",
+  projectId: "nodd-app-1e438",
+  storageBucket: "nodd-app-1e438.firebasestorage.app",
+  messagingSenderId: "262141335590",
+  appId: "1:262141335590:web:0bea68de1c65d85b026ee7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let selectedService = null;
+let selectedCat = null;
+let selectedPlatform = null;
+
+// 로그인 상태 확인
+onAuthStateChanged(auth, user => {
+  if(user){
+    currentUser = user;
+    document.getElementById('loginRequired').style.display = 'none';
+    document.getElementById('orderWrap').style.display = 'block';
+    // 이메일 자동 입력
+    const emailInput = document.getElementById('contactEmail');
+    if(emailInput) emailInput.value = user.email;
+  } else {
+    document.getElementById('loginRequired').style.display = 'block';
+    document.getElementById('orderWrap').style.display = 'none';
+  }
+});
+
+// 서비스 선택
+window.selectService = (type) => {
+  selectedService = type;
+  document.getElementById('svc-a').classList.toggle('selected', type==='A');
+  document.getElementById('svc-b').classList.toggle('selected', type==='B');
+  document.getElementById('btn1').disabled = false;
+};
+
+// 카테고리 선택
+window.selectCat = (el) => {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  selectedCat = el.textContent;
+};
+
+// 플랫폼 선택
+window.selectPlatform = (el) => {
+  document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  selectedPlatform = el.textContent.trim();
+};
+
+// 단계 이동
+window.goStep = (step) => {
+  document.querySelectorAll('.step-section').forEach(s => s.classList.remove('on'));
+  document.getElementById('step'+step).classList.add('on');
+  // 진행바 업데이트
+  for(let i=1;i<=3;i++){
+    const circle = document.getElementById('pc'+i);
+    const label = document.getElementById('pl-'+i);
+    if(i < step){ circle.className='p-circle done'; circle.textContent='✓'; }
+    else if(i === step){ circle.className='p-circle active'; circle.textContent=i; }
+    else{ circle.className='p-circle'; circle.textContent=i; }
+    if(label) label.className='p-label'+(i===step?' active':'');
+  }
+  for(let i=1;i<=2;i++){
+    const line = document.getElementById('pl'+i);
+    if(line) line.className='p-line'+(i<step?' done':'');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+// 의뢰 제출
+window.submitOrder = async () => {
+  const brandName = document.getElementById('brandName').value.trim();
+  const requestText = document.getElementById('requestText').value.trim();
+  const contactEmail = document.getElementById('contactEmail').value.trim();
+
+  if(!selectedCat){ showToast('카테고리를 선택해주세요.','error'); return; }
+  if(!selectedPlatform){ showToast('플랫폼을 선택해주세요.','error'); return; }
+  if(!brandName){ showToast('브랜드/제품명을 입력해주세요.','error'); return; }
+  if(!requestText){ showToast('요청사항을 입력해주세요.','error'); return; }
+  if(!contactEmail){ showToast('연락처 이메일을 입력해주세요.','error'); return; }
+
+  const btn = document.querySelector('#step2 .btn-next');
+  btn.disabled = true;
+  btn.textContent = '접수 중...';
+
+  try {
+    const orderId = `order_${Date.now()}`;
+    const orderData = {
+      userId: currentUser?.uid || 'guest',
+      userEmail: currentUser?.email || contactEmail,
+      serviceType: selectedService,
+      serviceLabel: selectedService==='A' ? '편집만 (₩70,000)' : '촬영+편집 (₩150,000)',
+      category: selectedCat,
+      platform: selectedPlatform,
+      brandName,
+      refUrl: document.getElementById('refUrl').value.trim(),
+      requestText,
+      contactEmail,
+      status: 'pending',
+      createdAt: serverTimestamp()
+    };
+
+    await setDoc(doc(db, 'orders', orderId), orderData);
+
+    // 완료 화면 요약
+    document.getElementById('doneSummary').innerHTML = `
+      <div class="done-row"><span class="done-row-label">서비스</span><span class="done-row-value">${orderData.serviceLabel}</span></div>
+      <div class="done-row"><span class="done-row-label">카테고리</span><span class="done-row-value">${selectedCat}</span></div>
+      <div class="done-row"><span class="done-row-label">플랫폼</span><span class="done-row-value">${selectedPlatform}</span></div>
+      <div class="done-row"><span class="done-row-label">브랜드/제품</span><span class="done-row-value">${brandName}</span></div>
+      <div class="done-row"><span class="done-row-label">연락처</span><span class="done-row-value">${contactEmail}</span></div>
+    `;
+
+    goStep(3);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '의뢰 접수하기 →';
+    showToast('오류가 발생했어요. 다시 시도해주세요.','error');
+  }
+};
+
+// 토스트
+function showToast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast'+(type?' '+type:'');
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+window.showToast = showToast;
+</script>
+</body>
+</html>

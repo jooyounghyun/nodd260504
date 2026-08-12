@@ -396,7 +396,7 @@ footer{padding:80px 0 40px;border-top:1px solid rgba(0,0,0,0.08);background:var(
   <h1 class="hero-headline">AI 쇼츠 영상 콘텐츠,<br><span class="outline">더 빠르게.</span><br><span class="lime">더 확실하게.</span></h1>
   <p class="hero-sub"><strong>고등학생 · 대학생 크리에이터</strong>가 만드는<br>AI 쇼츠 영상 콘텐츠 · 앱 제작 · AI 교육 플랫폼.<br>검증된 차세대 크리에이터가 만드는,<br>지금 이 순간의 트렌드로.</p>
   <div class="hero-actions">
-    <button class="btn-lg btn-lg-dark" onclick="openModal('signup')">지금 시작하기</button>
+    <button class="btn-lg btn-lg-dark" onclick="goOrder()">지금 시작하기</button>
     <button class="btn-lg btn-lg-outline" onclick="openModal('creator')">크리에이터로 활동하기 →</button>
   </div>
   <div class="hero-stats">
@@ -948,6 +948,18 @@ function closeModal(){
   document.body.style.overflow='';
 }
 function bgClose(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+// 의뢰 페이지 이동
+function goOrder(){
+  import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").then(({getAuth})=>{
+    try{
+      const a=getAuth();
+      if(a.currentUser){ window.location.href='order.html'; }
+      else{ openModal('signup'); }
+    }catch(e){ openModal('signup'); }
+  }).catch(()=>{ openModal('signup'); });
+}
+window.goOrder=goOrder;
 
 // ESC 키로 모달 닫기
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});

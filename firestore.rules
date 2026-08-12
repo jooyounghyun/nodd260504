@@ -50,6 +50,16 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
+    // ── 의뢰 ──
+    match /orders/{orderId} {
+      allow create: if request.auth != null
+                    && request.resource.data.keys().hasAll(['userId','serviceType','brandName','contactEmail'])
+                    && request.resource.data.brandName.size() <= 100;
+      allow read: if request.auth != null
+                  && resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
     // ── 관리자 전용 컬렉션 ──
     match /admin/{document=**} {
       allow read, write: if request.auth != null
