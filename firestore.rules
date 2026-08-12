@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── 기본: 모든 접근 차단 ──
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ── 사용자 프로필 ──
+    match /users/{userId} {
+      // 본인만 읽기/쓰기
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+
+      // 생성 시 필수 필드 검증
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.keys().hasAll(['email', 'role', 'createdAt'])
+                    && request.resource.data.role in ['brand', 'creator']
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 200;
+    }
+
+    // ── 크리에이터 지원서 ──
+    match /applications/{appId} {
+      // 본인 지원서만 읽기
+      allow read: if request.auth != null
+                  && resource.data.userId == request.auth.uid;
+
+      // 생성: 로그인된 사용자, 만 14세 이상 확인 필드 포함
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.keys().hasAll(['userId', 'name', 'school', 'specialty', 'ageVerified'])
+                    && request.resource.data.ageVerified == true
+                    && request.resource.data.name.size() <= 50
+                    && request.resource.data.school.size() <= 100;
+
+      // 수정/삭제 불가 (관리자만)
+      allow update, delete: if false;
+    }
+
+    // ── 이메일 사전등록 (CTA) ──
+    match /waitlist/{docId} {
+      // 누구나 생성 가능 (비로그인 포함), 본인 데이터만 읽기
+      allow create: if request.resource.data.keys().hasAll(['email', 'createdAt'])
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 200
+                    && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$');
+      allow read, update, delete: if false;
+    }
+
+    // ── 관리자 전용 컬렉션 ──
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.token.admin == true;
+    }
+  }
+}
