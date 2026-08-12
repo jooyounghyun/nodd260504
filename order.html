@@ -204,14 +204,17 @@ nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padd
       <div class="form-section-title">📂 콘텐츠 카테고리</div>
       <div class="form-group">
         <div class="cat-grid" id="catGrid">
-          <button class="cat-btn" onclick="selectCat(this)">뷰티·스킨케어</button>
-          <button class="cat-btn" onclick="selectCat(this)">푸드·음식</button>
-          <button class="cat-btn" onclick="selectCat(this)">앱·서비스 광고</button>
-          <button class="cat-btn" onclick="selectCat(this)">게임·테크</button>
-          <button class="cat-btn" onclick="selectCat(this)">패션·라이프</button>
-          <button class="cat-btn" onclick="selectCat(this)">여행·브이로그</button>
-          <button class="cat-btn" onclick="selectCat(this)">교육·정보</button>
-          <button class="cat-btn" onclick="selectCat(this)">기타</button>
+          <button class="cat-btn" onclick="selectCat(this,'')">뷰티·스킨케어</button>
+          <button class="cat-btn" onclick="selectCat(this,'')">푸드·음식</button>
+          <button class="cat-btn" onclick="selectCat(this,'')">앱·서비스 광고</button>
+          <button class="cat-btn" onclick="selectCat(this,'')">게임·테크</button>
+          <button class="cat-btn" onclick="selectCat(this,'')">패션·라이프</button>
+          <button class="cat-btn" onclick="selectCat(this,'')">여행·브이로그</button>
+          <button class="cat-btn" onclick="selectCat(this,'')">교육·정보</button>
+          <button class="cat-btn" onclick="selectCat(this,'other')">기타</button>
+        </div>
+        <div id="otherCatWrap" style="display:none;margin-top:12px">
+          <input type="text" class="form-input" id="otherCatInput" placeholder="어떤 카테고리인지 직접 입력해주세요">
         </div>
       </div>
     </div>
@@ -221,9 +224,9 @@ nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padd
       <div class="form-section-title">📱 타깃 플랫폼</div>
       <div class="form-group">
         <div class="platform-grid">
-          <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">🎵</span>TikTok</button>
           <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">📸</span>Instagram Reels</button>
           <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">▶️</span>YouTube Shorts</button>
+          <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">🎵</span>TikTok</button>
         </div>
       </div>
     </div>
@@ -232,8 +235,8 @@ nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padd
     <div class="form-section">
       <div class="form-section-title">📝 요청사항</div>
       <div class="form-group">
-        <label class="form-label">브랜드/제품명 <span>*</span></label>
-        <input type="text" class="form-input" id="brandName" placeholder="ex) 노드 스킨케어 세럼">
+        <label class="form-label">콘텐츠 주제 <span>*</span></label>
+        <input type="text" class="form-input" id="brandName" placeholder="ex) 개인 쇼츠, 제품 홍보, 브랜드명 등">
       </div>
       <div class="form-group">
         <label class="form-label">참고 영상 URL <span style="color:rgba(0,0,0,0.3);font-weight:400">(선택)</span></label>
@@ -314,10 +317,20 @@ window.selectService = (type) => {
 };
 
 // 카테고리 선택
-window.selectCat = (el) => {
+window.selectCat = (el, type) => {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
   el.classList.add('on');
-  selectedCat = el.textContent;
+  const otherWrap = document.getElementById('otherCatWrap');
+  if(type==='other'){
+    otherWrap.style.display='block';
+    selectedCat='기타';
+    document.getElementById('otherCatInput').oninput = (e) => {
+      selectedCat = e.target.value || '기타';
+    };
+  } else {
+    otherWrap.style.display='none';
+    selectedCat = el.textContent.trim();
+  }
 };
 
 // 플랫폼 선택
