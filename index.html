@@ -842,42 +842,24 @@ function buildCreatorForm(){
   return frag;
 }
 
-/* ✅ 브랜드/크리에이터 가입 폼 */
+/* ✅ 가입 폼 — 간단 버전 */
 function buildSignupForm(){
   const frag=document.createDocumentFragment();
   const title=document.createElement('div');title.className='modal-title';title.textContent='nodd 시작하기 🚀';frag.appendChild(title);
-  const sub=document.createElement('div');sub.className='modal-sub';sub.textContent='브랜드 또는 크리에이터로 가입하세요';frag.appendChild(sub);
-  const tabs=document.createElement('div');tabs.className='modal-tabs';
-  const tb=document.createElement('button');tb.className='modal-tab active';tb.id='tb';tb.textContent='브랜드 / 기업';tb.onclick=()=>switchTab('brand');
-  const tc=document.createElement('button');tc.className='modal-tab';tc.id='tc';tc.textContent='크리에이터';tc.onclick=()=>switchTab('creator-tab');
-  tabs.appendChild(tb);tabs.appendChild(tc);frag.appendChild(tabs);
-  // 브랜드 탭
-  const brandDiv=document.createElement('div');brandDiv.id='tab-brand';
-  ['🇰 카카오로 시작','G Google로 시작'].forEach(label=>{
-    const btn=document.createElement('button');btn.className='btn-social';btn.textContent=label;
-    btn.onclick=()=>showToast('소셜 로그인 연동 준비 중입니다.');brandDiv.appendChild(btn);
-  });
-  const d=document.createElement('div');d.className='modal-divider';d.textContent='또는 이메일로';brandDiv.appendChild(d);
-  brandDiv.appendChild(buildField('brand-company','회사명','text','(주)노드코퍼레이션'));
-  brandDiv.appendChild(buildField('brand-email','이메일','email','marketing@company.com'));
+  const sub=document.createElement('div');sub.className='modal-sub';sub.textContent='이메일로 간편하게 가입하세요';frag.appendChild(sub);
+  frag.appendChild(buildField('brand-email','이메일','email','hello@example.com'));
+  frag.appendChild(buildField('brand-pw','비밀번호','password','8자 이상'));
   // 동의
   const agreeDiv=document.createElement('div');agreeDiv.className='form-group';agreeDiv.style.cssText='display:flex;align-items:flex-start;gap:10px;margin-top:4px;';
-  const chk=document.createElement('input');chk.type='checkbox';chk.id='brand-agree';chk.style.marginTop='3px';
+  const chk=document.createElement('input');chk.type='checkbox';chk.id='brand-agree';chk.style.cssText='margin-top:3px;flex-shrink:0;width:16px;height:16px;cursor:pointer;';
   const cl=document.createElement('label');cl.htmlFor='brand-agree';cl.style.cssText='font-size:13px;color:rgba(0,0,0,0.55);cursor:pointer;line-height:1.5;';
   cl.innerHTML='<a href="terms.html" target="_blank" style="color:var(--accent-dark)">이용약관</a> 및 <a href="privacy.html" target="_blank" style="color:var(--accent-dark)">개인정보처리방침</a>에 동의합니다.';
-  agreeDiv.appendChild(chk);agreeDiv.appendChild(cl);brandDiv.appendChild(agreeDiv);
-  const sb=document.createElement('button');sb.className='btn-submit';sb.style.marginTop='12px';sb.textContent='무료로 시작하기';
-  sb.onclick=()=>submitBrand(sb);brandDiv.appendChild(sb);
-  frag.appendChild(brandDiv);
-  // 크리에이터 탭
-  const crDiv=document.createElement('div');crDiv.id='tab-creator-tab';crDiv.style.display='none';
-  crDiv.appendChild(buildField('su-name','이름','text','홍길동'));
-  crDiv.appendChild(buildField('su-email','이메일','email','you@email.com'));
-  crDiv.appendChild(buildField('su-school','학교 / 학년','text','고등학교 또는 대학교'));
-  const note=document.createElement('div');note.style.cssText='text-align:center;margin-top:10px;font-size:12px;color:rgba(0,0,0,0.35)';note.textContent='고등학생 · 대학생만 지원 가능 (만 14세 이상)';crDiv.appendChild(note);
-  const sb2=document.createElement('button');sb2.className='btn-submit';sb2.style.marginTop='12px';sb2.textContent='크리에이터 지원하기';
-  sb2.onclick=()=>openModal('creator');crDiv.appendChild(sb2);
-  frag.appendChild(crDiv);
+  agreeDiv.appendChild(chk);agreeDiv.appendChild(cl);frag.appendChild(agreeDiv);
+  const sb=document.createElement('button');sb.className='btn-submit';sb.style.marginTop='12px';sb.textContent='가입하기';
+  sb.onclick=()=>submitBrand(sb);frag.appendChild(sb);
+  const divider=document.createElement('div');divider.className='modal-divider';divider.textContent='크리에이터로 활동하고 싶다면?';frag.appendChild(divider);
+  const creatorBtn=document.createElement('button');creatorBtn.className='btn-social';creatorBtn.textContent='전문가로 활동하기 →';
+  creatorBtn.onclick=()=>openModal('creator');frag.appendChild(creatorBtn);
   return frag;
 }
 
@@ -927,15 +909,15 @@ function submitCreator(btn){
 }
 
 function submitBrand(btn){
-  const company=sanitizeInput(document.getElementById('brand-company')?.value||'');
   const email=sanitizeInput(document.getElementById('brand-email')?.value||'');
+  const pw=document.getElementById('brand-pw')?.value||'';
   const agreed=document.getElementById('brand-agree')?.checked;
-  if(!company||company.length<2){showFieldError('brand-company','회사명을 입력해주세요.');return;}
   if(!isValidEmail(email)){showFieldError('brand-email','올바른 이메일을 입력해주세요.');return;}
+  if(pw.length<8){showFieldError('brand-pw','비밀번호는 8자 이상이어야 합니다.');return;}
   if(!agreed){showToast('이용약관 및 개인정보처리방침에 동의해주세요.','error');return;}
   if(!rateLimitCheck('signup',5,3600000)){showToast('잠시 후 다시 시도해주세요.','error');return;}
   setLoading(btn,true);
-  window.firebaseSignup(email, '123456', 'brand', company, btn);
+  window.firebaseSignup(email, pw, 'user', '', btn);
 }
 
 function showFieldError(id, msg){
