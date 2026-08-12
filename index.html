@@ -6,9 +6,7 @@
 <meta name="color-scheme" content="light only">
 <title>nodd — Verified Young Creators. Fast.</title>
 <!-- ✅ DOMPurify (XSS 방어) — SRI 해시 고정 -->
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"
-  integrity="sha384-YEkeyAKbjYSLDrpbBY0aFgK1CrQHo0Erb5XT/MU5FYvkb3SmPSZSisW7LOYTKvTx"
-  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
@@ -902,8 +900,6 @@ function submitLogin(btn){
   if(!isValidEmail(email)){showFieldError('email','올바른 이메일을 입력해주세요.');return;}
   if(pw.length<8){showFieldError('password','비밀번호는 8자 이상이어야 합니다.');return;}
   if(!rateLimitCheck('login',5,300000)){showToast('로그인 시도가 너무 많습니다. 5분 후 재시도해주세요.','error');return;}
-  const email=sanitizeInput(document.getElementById('email')?.value||'');
-  const pw=document.getElementById('password')?.value||'';
   window.firebaseLogin(email, pw, btn);
 }
 
@@ -1060,6 +1056,11 @@ window.firebaseSignup = async (email, password, role, company, btn) => {
 };
 
 // ── 로그아웃 ──
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.switchTab = switchTab;
+window.switchType = switchType;
+window.handleCTA = handleCTA;
 window.firebaseLogout = async () => {
   await signOut(auth);
   showToast('로그아웃되었습니다.', 'success');
