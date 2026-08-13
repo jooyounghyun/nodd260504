@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>nodd 관리자</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light !important;--bg:#f7f5f0;--bg2:#eeeae2;--blk:#0f0f0f;--wht:#fff;--lime:#b8e000;--limed:#7aaa00;--border:rgba(0,0,0,0.08);--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:var(--font-b);font-size:14px;color:var(--blk);}
+/* 로그인 화면 */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-box{background:var(--wht);border:1px solid var(--border);border-radius:20px;padding:48px;width:100%;max-width:400px;}
+.logo{font-family:var(--font-d);font-size:24px;font-weight:800;margin-bottom:8px;}
+.logo span{color:var(--limed);}
+.login-sub{font-size:13px;color:rgba(0,0,0,0.4);margin-bottom:32px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:600;color:rgba(0,0,0,0.45);margin-bottom:6px;display:block;}
+.form-input{width:100%;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.1);border-radius:10px;padding:12px 16px;font-family:var(--font-b);font-size:14px;color:var(--blk);outline:none;transition:border-color 0.2s;}
+.form-input:focus{border-color:rgba(122,170,0,0.5);}
+.btn-login{width:100%;background:var(--blk);color:#fff;border:none;border-radius:10px;padding:14px;font-family:var(--font-d);font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;transition:opacity 0.2s;}
+.btn-login:hover{opacity:0.85;}
+.login-err{font-size:12px;color:#e53e3e;margin-top:8px;text-align:center;display:none;}
+/* 대시보드 */
+.dashboard{display:none;}
+.nav{background:var(--wht);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.nav-logo{font-family:var(--font-d);font-size:20px;font-weight:800;}
+.nav-logo span{color:var(--limed);}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.admin-badge{background:rgba(184,224,0,0.15);border:1px solid rgba(122,170,0,0.25);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--limed);}
+.btn-logout{background:none;border:1px solid var(--border);border-radius:100px;padding:6px 16px;font-size:13px;cursor:pointer;font-family:var(--font-b);color:rgba(0,0,0,0.5);transition:all 0.2s;}
+.btn-logout:hover{border-color:var(--blk);color:var(--blk);}
+.main{max-width:1200px;margin:0 auto;padding:40px 32px;}
+/* 탭 */
+.tabs{display:flex;gap:4px;background:rgba(0,0,0,0.05);border-radius:12px;padding:4px;margin-bottom:32px;width:fit-content;}
+.tab{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:rgba(0,0,0,0.4);border:none;background:none;font-family:var(--font-b);transition:all 0.2s;}
+.tab.on{background:var(--blk);color:#fff;}
+/* 통계 카드 */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+.stat-card{background:var(--wht);border:1px solid var(--border);border-radius:16px;padding:24px;}
+.stat-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:8px;}
+.stat-num{font-family:var(--font-d);font-size:32px;font-weight:800;letter-spacing:-1px;color:var(--blk);}
+.stat-num em{color:var(--limed);font-style:normal;}
+/* 섹션 */
+.section-title{font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:16px;}
+.loading{text-align:center;padding:48px;color:rgba(0,0,0,0.35);font-size:14px;}
+.empty{text-align:center;padding:48px;color:rgba(0,0,0,0.35);}
+/* 테이블 */
+.table-wrap{background:var(--wht);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:32px;}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg2);padding:12px 16px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(0,0,0,0.4);border-bottom:1px solid var(--border);}
+td{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,0.05);font-size:13px;color:rgba(0,0,0,0.7);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,0,0,0.01);}
+/* 상태 뱃지 */
+.badge{display:inline-block;border-radius:100px;padding:3px 10px;font-size:11px;font-weight:700;}
+.badge-pending{background:rgba(245,158,11,0.12);color:#b45309;}
+.badge-approved{background:rgba(122,170,0,0.12);color:var(--limed);}
+.badge-rejected{background:rgba(229,62,62,0.1);color:#c53030;}
+/* 액션 버튼 */
+.btn-approve{background:rgba(122,170,0,0.12);border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--limed);cursor:pointer;margin-right:6px;transition:background 0.2s;}
+.btn-approve:hover{background:rgba(122,170,0,0.25);}
+.btn-reject{background:rgba(229,62,62,0.08);border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;color:#c53030;cursor:pointer;transition:background 0.2s;}
+.btn-reject:hover{background:rgba(229,62,62,0.18);}
+/* 유저 목록 */
+.user-email{font-weight:500;color:var(--blk);}
+.user-date{font-size:11px;color:rgba(0,0,0,0.35);}
+.tab-content{display:none;}
+.tab-content.on{display:block;}
+
+/* ✅ 다크모드 강제 무시 */
+html, body, * {
+  -webkit-color-scheme: light !important;
+  color-scheme: light !important;
+}
+</style>
+</head>
+<body>
+
+<!-- 로그인 화면 -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="logo">nodd<span>.</span></div>
+    <div class="login-sub">관리자 전용 페이지</div>
+    <div class="form-group">
+      <label class="form-label">이메일</label>
+      <input type="email" class="form-input" id="adminEmail" placeholder="admin@nodd.io">
+    </div>
+    <div class="form-group">
+      <label class="form-label">비밀번호</label>
+      <input type="password" class="form-input" id="adminPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()">
+    </div>
+    <button class="btn-login" onclick="adminLogin()">로그인</button>
+    <div class="login-err" id="loginErr">이메일 또는 비밀번호가 올바르지 않습니다.</div>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div class="dashboard" id="dashboard">
+  <div class="nav">
+    <div class="nav-logo">nodd<span>.</span> <span style="font-size:13px;font-weight:400;color:rgba(0,0,0,0.35);margin-left:8px">관리자</span></div>
+    <div class="nav-right">
+      <span class="admin-badge">⚙ ADMIN</span>
+      <span id="adminEmailDisplay" style="font-size:13px;color:rgba(0,0,0,0.45)"></span>
+      <button class="btn-logout" onclick="adminLogout()">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- 통계 -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">전체 회원</div><div class="stat-num" id="totalUsers">-</div></div>
+      <div class="stat-card"><div class="stat-label">크리에이터 지원</div><div class="stat-num" id="totalApps">-</div></div>
+      <div class="stat-card"><div class="stat-label">승인 대기</div><div class="stat-num" id="pendingApps">-</div></div>
+      <div class="stat-card"><div class="stat-label">웨이트리스트</div><div class="stat-num" id="totalWait">-</div></div>
+    </div>
+
+    <!-- 탭 -->
+    <div class="tabs">
+      <button class="tab on" onclick="switchAdminTab('applications')">크리에이터 지원서</button>
+      <button class="tab" onclick="switchAdminTab('users')">회원 목록</button>
+      <button class="tab" onclick="switchAdminTab('waitlist')">웨이트리스트</button>
+    </div>
+
+    <!-- 크리에이터 지원서 -->
+    <div class="tab-content on" id="tab-applications">
+      <div class="section-title">크리에이터 지원서</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>이름</th><th>이메일</th><th>학교/학년</th><th>전문분야</th><th>지원일</th><th>상태</th><th>액션</th>
+            </tr>
+          </thead>
+          <tbody id="appList"><tr><td colspan="7" class="loading">불러오는 중...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 회원 목록 -->
+    <div class="tab-content" id="tab-users">
+      <div class="section-title">회원 목록</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>이메일</th><th>역할</th><th>가입일</th></tr>
+          </thead>
+          <tbody id="userList"><tr><td colspan="3" class="loading">불러오는 중...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 웨이트리스트 -->
+    <div class="tab-content" id="tab-waitlist">
+      <div class="section-title">웨이트리스트 이메일</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>이메일</th><th>등록일</th></tr>
+          </thead>
+          <tbody id="waitList"><tr><td colspan="2" class="loading">불러오는 중...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCRaRnBaIxl3nLQXS88ThOfEGIfXeiVIp0",
+  authDomain: "nodd-app-1e438.firebaseapp.com",
+  projectId: "nodd-app-1e438",
+  storageBucket: "nodd-app-1e438.firebasestorage.app",
+  messagingSenderId: "262141335590",
+  appId: "1:262141335590:web:0bea68de1c65d85b026ee7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// 날짜 포맷
+function fmtDate(ts){
+  if(!ts) return '-';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'});
+}
+
+// 상태 뱃지
+function statusBadge(s){
+  if(s==='approved') return '<span class="badge badge-approved">승인</span>';
+  if(s==='rejected') return '<span class="badge badge-rejected">거절</span>';
+  return '<span class="badge badge-pending">대기</span>';
+}
+
+// 통계 로드
+async function loadStats(){
+  try {
+    const [apps, users, wait] = await Promise.all([
+      getDocs(collection(db,'applications')),
+      getDocs(collection(db,'users')),
+      getDocs(collection(db,'waitlist'))
+    ]);
+    document.getElementById('totalUsers').textContent = users.size;
+    document.getElementById('totalApps').textContent = apps.size;
+    document.getElementById('totalWait').textContent = wait.size;
+    let pending = 0;
+    apps.forEach(d => { if(d.data().status==='pending') pending++; });
+    document.getElementById('pendingApps').textContent = pending;
+  } catch(e){ console.error(e); }
+}
+
+// 지원서 로드
+async function loadApplications(){
+  const tbody = document.getElementById('appList');
+  try {
+    const snap = await getDocs(query(collection(db,'applications'), orderBy('createdAt','desc')));
+    if(snap.empty){ tbody.innerHTML='<tr><td colspan="7" class="empty">지원서가 없습니다.</td></tr>'; return; }
+    tbody.innerHTML = '';
+    snap.forEach(d => {
+      const data = d.data();
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${data.name||'-'}</strong></td>
+        <td>${data.email||'-'}</td>
+        <td>${data.school||'-'}</td>
+        <td>${data.specialty||'-'}</td>
+        <td class="user-date">${fmtDate(data.createdAt)}</td>
+        <td>${statusBadge(data.status)}</td>
+        <td>
+          ${data.status==='pending' ? `
+            <button class="btn-approve" onclick="window.approveApp('${d.id}')">승인</button>
+            <button class="btn-reject" onclick="window.rejectApp('${d.id}')">거절</button>
+          ` : '-'}
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  } catch(e){ tbody.innerHTML=`<tr><td colspan="7" class="empty">오류: ${e.message}</td></tr>`; }
+}
+
+// 회원 로드
+async function loadUsers(){
+  const tbody = document.getElementById('userList');
+  try {
+    const snap = await getDocs(query(collection(db,'users'), orderBy('createdAt','desc')));
+    if(snap.empty){ tbody.innerHTML='<tr><td colspan="3" class="empty">회원이 없습니다.</td></tr>'; return; }
+    tbody.innerHTML = '';
+    snap.forEach(d => {
+      const data = d.data();
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="user-email">${data.email||'-'}</td>
+        <td>${data.role||'일반'}</td>
+        <td class="user-date">${fmtDate(data.createdAt)}</td>`;
+      tbody.appendChild(tr);
+    });
+  } catch(e){ tbody.innerHTML=`<tr><td colspan="3" class="empty">오류: ${e.message}</td></tr>`; }
+}
+
+// 웨이트리스트 로드
+async function loadWaitlist(){
+  const tbody = document.getElementById('waitList');
+  try {
+    const snap = await getDocs(collection(db,'waitlist'));
+    if(snap.empty){ tbody.innerHTML='<tr><td colspan="2" class="empty">등록된 이메일이 없습니다.</td></tr>'; return; }
+    tbody.innerHTML = '';
+    snap.forEach(d => {
+      const data = d.data();
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="user-email">${data.email||d.id}</td>
+        <td class="user-date">${fmtDate(data.createdAt)}</td>`;
+      tbody.appendChild(tr);
+    });
+  } catch(e){ tbody.innerHTML=`<tr><td colspan="2" class="empty">오류: ${e.message}</td></tr>`; }
+}
+
+// 승인/거절
+window.approveApp = async (id) => {
+  if(!confirm('승인하시겠어요?')) return;
+  await updateDoc(doc(db,'applications',id), {status:'approved'});
+  loadApplications(); loadStats();
+};
+window.rejectApp = async (id) => {
+  if(!confirm('거절하시겠어요?')) return;
+  await updateDoc(doc(db,'applications',id), {status:'rejected'});
+  loadApplications(); loadStats();
+};
+
+// 로그인 상태 감지
+onAuthStateChanged(auth, user => {
+  if(user){
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('adminEmailDisplay').textContent = user.email;
+    loadStats();
+    loadApplications();
+  } else {
+    document.getElementById('loginWrap').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+});
+
+// 로그인
+window.adminLogin = async () => {
+  const email = document.getElementById('adminEmail').value;
+  const pw = document.getElementById('adminPw').value;
+  const err = document.getElementById('loginErr');
+  err.style.display = 'none';
+  try {
+    await signInWithEmailAndPassword(auth, email, pw);
+  } catch(e) {
+    err.style.display = 'block';
+  }
+};
+
+// 로그아웃
+window.adminLogout = async () => {
+  await signOut(auth);
+};
+
+// 탭 전환
+window.switchAdminTab = (tab) => {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('on', ['applications','users','waitlist'][i]===tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('on'));
+  document.getElementById('tab-'+tab).classList.add('on');
+  if(tab==='users') loadUsers();
+  if(tab==='waitlist') loadWaitlist();
+};
+</script>
+</body>
+</html>

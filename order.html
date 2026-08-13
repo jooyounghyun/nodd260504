@@ -7,7 +7,8 @@
 <title>콘텐츠 의뢰하기 — nodd</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f7f5f0;--bg2:#eeeae2;--blk:#0f0f0f;--wht:#fff;--lime:#b8e000;--limed:#7aaa00;--border:rgba(0,0,0,0.08);--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;--ease:cubic-bezier(0.16,1,0.3,1);}
+:root{
+  color-scheme:light !important;--bg:#f7f5f0;--bg2:#eeeae2;--blk:#0f0f0f;--wht:#fff;--lime:#b8e000;--limed:#7aaa00;--border:rgba(0,0,0,0.08);--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;--ease:cubic-bezier(0.16,1,0.3,1);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);font-family:var(--font-b);font-size:15px;color:var(--blk);min-height:100vh;}
 
@@ -80,7 +81,7 @@ nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padd
 .platform-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:var(--wht);font-family:var(--font-b);font-size:12px;font-weight:600;cursor:pointer;color:rgba(0,0,0,0.45);text-align:center;transition:all 0.2s;}
 .platform-btn:hover{border-color:rgba(0,0,0,0.2);}
 .platform-btn.on{border-color:var(--blk);background:var(--blk);color:#fff;}
-.platform-icon{font-size:20px;display:block;margin-bottom:4px;}
+.platform-icon{display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
 
 /* 완료 화면 */
 .done-wrap{text-align:center;padding:60px 0;}
@@ -108,6 +109,20 @@ nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padd
 .login-required-sub{font-size:15px;color:rgba(0,0,0,0.45);margin-bottom:32px;}
 .btn-go-login{display:inline-block;background:var(--blk);color:#fff;border-radius:100px;padding:14px 36px;font-family:var(--font-d);font-size:15px;font-weight:700;text-decoration:none;cursor:pointer;}
 
+/* AI 옵션 */
+.ai-option-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(0,0,0,0.02);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;gap:12px;}
+.ai-option-row:hover{border-color:rgba(0,0,0,0.15);background:rgba(0,0,0,0.04);}
+.ai-option-row:has(input:checked){border-color:var(--blk);background:rgba(0,0,0,0.03);}
+.ai-option-info{flex:1;}
+.ai-option-name{font-size:14px;font-weight:600;color:var(--blk);margin-bottom:3px;}
+.ai-option-desc{font-size:11px;color:rgba(0,0,0,0.42);line-height:1.5;}
+.ai-price{font-family:var(--font-d);font-size:14px;font-weight:700;color:var(--limed);white-space:nowrap;}
+.ai-check{width:18px;height:18px;cursor:pointer;accent-color:var(--blk);flex-shrink:0;}
+.total-box{background:var(--blk);border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:8px;}
+.total-box>div:first-child{color:rgba(255,255,255,0.5);}
+.total-price{font-family:var(--font-d);font-size:28px;font-weight:800;letter-spacing:-1px;color:#fff;}
+.total-box>div:last-child{color:rgba(255,255,255,0.3);}
+
 /* 토스트 */
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--blk);color:#fff;border-radius:100px;padding:12px 24px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:all 0.3s var(--ease);pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -118,6 +133,12 @@ nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padd
   .container{padding:40px 16px 80px;}
   .service-grid{grid-template-columns:1fr;}
   .platform-grid{flex-wrap:wrap;}
+}
+
+/* ✅ 다크모드 강제 무시 */
+html, body, * {
+  -webkit-color-scheme: light !important;
+  color-scheme: light !important;
 }
 </style>
 </head>
@@ -191,6 +212,62 @@ nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padd
         </ul>
       </div>
     </div>
+    <!-- AI 옵션 -->
+    <div id="aiOptions" style="display:none;margin-top:8px">
+      <div class="form-section">
+        <div class="form-section-title">🤖 AI 옵션 추가 <span style="font-size:12px;font-weight:400;color:rgba(0,0,0,0.35)">(선택사항)</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <label class="ai-option-row" onclick="calcTotal()">
+            <div class="ai-option-info">
+              <div class="ai-option-name">AI 배경 합성</div>
+              <div class="ai-option-desc">실사·판타지 배경을 AI로 생성해 합성</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="ai-price">+₩20,000</span>
+              <input type="checkbox" class="ai-check" id="ai1" value="20000">
+            </div>
+          </label>
+          <label class="ai-option-row" onclick="calcTotal()">
+            <div class="ai-option-info">
+              <div class="ai-option-name">AI 캐릭터·아바타 삽입</div>
+              <div class="ai-option-desc">AI로 생성한 캐릭터 또는 아바타를 영상에 삽입</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="ai-price">+₩30,000</span>
+              <input type="checkbox" class="ai-check" id="ai2" value="30000">
+            </div>
+          </label>
+          <label class="ai-option-row" onclick="calcTotal()">
+            <div class="ai-option-info">
+              <div class="ai-option-name">AI 얼굴 효과</div>
+              <div class="ai-option-desc">AI 뷰티필터·스타일 변환 등 얼굴 효과 적용</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="ai-price">+₩15,000</span>
+              <input type="checkbox" class="ai-check" id="ai3" value="15000">
+            </div>
+          </label>
+          <label class="ai-option-row" onclick="calcTotal()">
+            <div class="ai-option-info">
+              <div class="ai-option-name">AI 목소리 생성</div>
+              <div class="ai-option-desc">AI 나레이션·보이스오버 자동 생성</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="ai-price">+₩15,000</span>
+              <input type="checkbox" class="ai-check" id="ai4" value="15000">
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- 최종 금액 -->
+      <div class="total-box">
+        <div style="font-size:13px;color:rgba(0,0,0,0.45)">최종 금액</div>
+        <div class="total-price" id="totalPrice">₩70,000</div>
+        <div style="font-size:11px;color:rgba(0,0,0,0.35);margin-top:4px">크리에이터 수령 80% · nodd 수수료 20%</div>
+      </div>
+    </div>
+
     <button class="btn-next" id="btn1" onclick="goStep(2)" disabled>다음 단계 →</button>
   </div>
 
@@ -224,9 +301,37 @@ nav{background:rgba(247,245,240,0.95);border-bottom:1px solid var(--border);padd
       <div class="form-section-title">📱 타깃 플랫폼</div>
       <div class="form-group">
         <div class="platform-grid">
-          <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">📸</span>Instagram Reels</button>
-          <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">▶️</span>YouTube Shorts</button>
-          <button class="platform-btn" onclick="selectPlatform(this)"><span class="platform-icon">🎵</span>TikTok</button>
+          <button class="platform-btn" onclick="selectPlatform(this)">
+            <span class="platform-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs><radialGradient id="ig1" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#ffd676"/><stop offset="25%" stop-color="#f86f3f"/><stop offset="50%" stop-color="#e0376b"/><stop offset="75%" stop-color="#c02a9f"/><stop offset="100%" stop-color="#7232bd"/></radialGradient></defs>
+                <rect width="24" height="24" rx="6" fill="url(#ig1)"/>
+                <circle cx="12" cy="12" r="4.5" stroke="white" stroke-width="1.8" fill="none"/>
+                <circle cx="17.5" cy="6.5" r="1.2" fill="white"/>
+              </svg>
+            </span>
+            Instagram
+          </button>
+          <button class="platform-btn" onclick="selectPlatform(this)">
+            <span class="platform-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="6" fill="#FF0000"/>
+                <path d="M19.8 8.2c-.2-.8-.8-1.4-1.6-1.6C16.8 6.3 12 6.3 12 6.3s-4.8 0-6.2.3c-.8.2-1.4.8-1.6 1.6C4 9.5 4 12 4 12s0 2.5.2 3.8c.2.8.8 1.4 1.6 1.6 1.4.3 6.2.3 6.2.3s4.8 0 6.2-.3c.8-.2 1.4-.8 1.6-1.6.2-1.3.2-3.8.2-3.8s0-2.5-.2-3.8z" fill="white"/>
+                <path d="M10.5 14.5v-5l4.5 2.5-4.5 2.5z" fill="#FF0000"/>
+              </svg>
+            </span>
+            YouTube
+          </button>
+          <button class="platform-btn" onclick="selectPlatform(this)">
+            <span class="platform-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="6" fill="#010101"/>
+                <path d="M17.5 6.5c-.4.5-.9.9-1.5 1.1-.5.2-1.1.3-1.7.3V9c.8 0 1.5-.2 2.1-.5v5c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.3 0 .6 0 .9.1V7.5c-.3 0-.6-.1-.9-.1-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6V9.2c.6.4 1.3.7 2 .8V8c-.6-.1-1.1-.4-1.5-.8-.4-.4-.7-.9-.8-1.5h-1.6v.8z" fill="white"/>
+                <path d="M14 7.9V5h-2v8c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2c.2 0 .4 0 .6.1V8.9c-.2 0-.4-.1-.6-.1-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4V9.7c.6.3 1.3.4 2 .4v-2c-.7 0-1.4-.1-2-.2z" fill="white"/>
+              </svg>
+            </span>
+            TikTok
+          </button>
         </div>
       </div>
     </div>
@@ -314,6 +419,18 @@ window.selectService = (type) => {
   document.getElementById('svc-a').classList.toggle('selected', type==='A');
   document.getElementById('svc-b').classList.toggle('selected', type==='B');
   document.getElementById('btn1').disabled = false;
+  document.getElementById('aiOptions').style.display = 'block';
+  calcTotal();
+};
+
+window.calcTotal = () => {
+  const base = selectedService === 'B' ? 150000 : 70000;
+  let aiTotal = 0;
+  document.querySelectorAll('.ai-check').forEach(chk => {
+    if(chk.checked) aiTotal += parseInt(chk.value);
+  });
+  const total = base + aiTotal;
+  document.getElementById('totalPrice').textContent = '₩' + total.toLocaleString();
 };
 
 // 카테고리 선택
@@ -383,6 +500,10 @@ window.submitOrder = async () => {
       userEmail: currentUser?.email || contactEmail,
       serviceType: selectedService,
       serviceLabel: selectedService==='A' ? '편집만 (₩70,000)' : '촬영+편집 (₩150,000)',
+      aiOptions: aiOptions,
+      basePrice: basePrice,
+      aiPrice: aiTotal,
+      totalPrice: totalPrice,
       category: selectedCat,
       platform: selectedPlatform,
       brandName,
